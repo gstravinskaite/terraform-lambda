@@ -37,6 +37,6 @@ module "lambda" {
   }
 
   lambda_iam_managed_policy_arns = [
-    <A comma separated list of the relevant IAM policy arns>
+    "<A comma separated list of the relevant IAM policy arns>"
   ]
 }
