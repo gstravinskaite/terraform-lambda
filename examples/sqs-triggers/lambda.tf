@@ -16,13 +16,13 @@ module "lambda" {
   log_retention              = 7 
 
   vpc_config = {
-    security_group_ids = [<Lamba securit group>]
+    security_group_ids = ["<Lamba security group>"]
     subnet_ids         = var.vpc_private_subnets
   }
 
   event_sources = [
     {
-      arn        = <SQS queue arn>
+      arn        = "<SQS queue arn>"
       enabled    = true
       batch_size = var.batch_size
     }
