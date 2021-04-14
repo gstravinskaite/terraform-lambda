@@ -27,7 +27,7 @@ resource "aws_lambda_function" "code_tf_unmanaged" {
     ignore_changes = [s3_key, s3_object_version, handler]
   }
 
-  tags = local.tags_map
+  tags = local.common_tags
 
   dynamic "vpc_config" {
     for_each = var.vpc_config == null ? [] : [var.vpc_config]
@@ -65,7 +65,7 @@ resource "aws_lambda_function" "code_tf_managed" {
   s3_key            = data.aws_s3_bucket_object.lambda_artefact_bucket.key
   s3_object_version = data.aws_s3_bucket_object.lambda_artefact_bucket.version_id
 
-  tags = local.tags_map
+  tags = local.common_tags
 
   dynamic "vpc_config" {
     for_each = var.vpc_config == null ? [] : [var.vpc_config]
