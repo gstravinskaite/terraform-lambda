@@ -1,3 +1,9 @@
+variable "code_tf_managed" {
+  description = "Controls the type of lambda - with or without lifeycle setting"
+  type = bool
+  default = false
+}
+
 variable "function_name" {
   description = "A unique name for your Lambda Function."
   type        = string

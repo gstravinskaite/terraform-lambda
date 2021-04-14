@@ -19,7 +19,7 @@ EOF
 
   managed_policy_arns = var.lambda_iam_managed_policy_arns
 
-  tags = local.tags_map
+  tags = local.common_tags
 }
 
 resource "aws_iam_role_policy" "inline_policy" {

@@ -3,7 +3,9 @@ data "aws_s3_bucket_object" "lambda_artefact_bucket" {
   key    = var.lambda_filename_s3_path
 }
 
-resource "aws_lambda_function" "lambda_function" {
+resource "aws_lambda_function" "code_tf_unmanaged" {
+
+  count                          = var.code_tf_managed ? 0 : 1
   function_name                  = var.function_name
   description                    = var.description
   role                           = aws_iam_role.lambda_permissions_role.arn
@@ -24,6 +26,44 @@ resource "aws_lambda_function" "lambda_function" {
   lifecycle {
     ignore_changes = [s3_key, s3_object_version, handler]
   }
+
+  tags = local.tags_map
+
+  dynamic "vpc_config" {
+    for_each = var.vpc_config == null ? [] : [var.vpc_config]
+    content {
+      security_group_ids = vpc_config.value.security_group_ids
+      subnet_ids         = vpc_config.value.subnet_ids
+    }
+  }
+
+  dynamic "environment" {
+    for_each = var.environment == null ? [] : [var.environment]
+    content {
+      variables = var.environment
+    }
+  }
+
+  depends_on = [aws_cloudwatch_log_group.lambda_log_group]
+}
+
+
+resource "aws_lambda_function" "code_tf_managed" {
+
+  count                          = var.code_tf_managed ? 1: 0
+  function_name                  = var.function_name
+  description                    = var.description
+  role                           = aws_iam_role.lambda_permissions_role.arn
+  handler                        = var.handler
+  runtime                        = var.runtime
+  publish                        = var.publish
+  memory_size                    = var.memory_size
+  reserved_concurrent_executions = var.concurrency
+  timeout                        = var.lambda_timeout
+
+  s3_bucket         = data.aws_s3_bucket_object.lambda_artefact_bucket.bucket
+  s3_key            = data.aws_s3_bucket_object.lambda_artefact_bucket.key
+  s3_object_version = data.aws_s3_bucket_object.lambda_artefact_bucket.version_id
 
   tags = local.tags_map
 
